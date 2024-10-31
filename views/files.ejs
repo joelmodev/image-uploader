@@ -28,6 +28,7 @@
         <p>Nome do arquivo: <%= filePath %></p>
         <a href="/files/<%= filePath %>" download>Baixar arquivo</a>
       <% } %>
+    <p>Data de upload: <%= uploadDate.toLocaleDateString('pt-BR') %></p>
   </div>
   
 </body>

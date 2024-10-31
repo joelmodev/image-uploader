@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Olá, Mundo!</title>
+</head>
+<body>
+  <h1>Envio de Arquivo</h1>
+  
+  <div id="message"><%= message %></div>
+  
+  <form id="uploadForm" action="/upload" method="POST" enctype="multipart/form-data">
+    <input type="file" name="file" required>
+    <button type="submit">Enviar</button>
+  </form>
+
+  <div id="fileLink" style="margin-top: 20px;"></div>
+
+  <script>
+    document.getElementById('uploadForm').addEventListener('submit', function(event) {
+      event.preventDefault();
+      
+      const formData = new FormData(this);
+      const xhr = new XMLHttpRequest();
+      
+      xhr.open('POST', '/upload', true);
+      
+      xhr.onload = function() {
+        const messageDiv = document.getElementById('message');
+        const fileLinkDiv = document.getElementById('fileLink');
+        if (xhr.status === 200) {
+          const response = JSON.parse(xhr.responseText);
+          messageDiv.textContent = response.message;
+          messageDiv.style.color = 'green';
+          fileLinkDiv.innerHTML = `<a href="/f/${response.id}" target="_blank">Clique aqui para acessar o arquivo</a>`;
+        } else {
+          const response = JSON.parse(xhr.responseText);
+          messageDiv.textContent = response.error || 'Erro ao enviar o arquivo';
+          messageDiv.style.color = 'red';
+          fileLinkDiv.innerHTML = '';
+        }
+      };
+      
+      xhr.send(formData);
+    });
+  </script>
+</body>
+</html>

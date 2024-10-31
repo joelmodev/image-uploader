@@ -2,6 +2,8 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const mime = require('mime-types');
+const sanitize = require('sanitize-filename');
 
 const app = express();
 const port = 3000;
@@ -21,14 +23,23 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     const randomName = Math.random().toString(36).substring(2, 14);
-    cb(null, randomName + "-" + file.originalname);
+    const sanitizedFilename = sanitize(file.originalname);
+    cb(null, randomName + "-" + sanitizedFilename);
   }
 });
 
-// Limite cada upload a 50mb
+// Limite cada upload a 50mb e verifique o tipo MIME
 const upload = multer({
   storage: storage,
-  limits: { fileSize: 50 * 1024 * 1024 }
+  limits: { fileSize: 50 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif', 'application/pdf', 'video/mp4', 'audio/mpeg'];
+    if (allowedMimeTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Tipo de arquivo não permitido'));
+    }
+  }
 });
 
 app.use(express.json());
@@ -36,7 +47,12 @@ app.use(express.urlencoded({ extended: true }));
 
 // Configuração do diretório público para arquivos estáticos
 app.use(express.static(path.join(__dirname, 'public')));
-app.use('/files', express.static(path.join(__dirname, 'files')));
+app.use('/files', express.static(path.join(__dirname, 'files'), {
+  setHeaders: (res, filePath) => {
+    // Defina o cabeçalho Content-Disposition para forçar o download
+    res.setHeader('Content-Disposition', 'attachment');
+  }
+}));
 
 app.get('/', (req, res) => {
   res.render('index', { message: 'Olá, mundo!' });
@@ -72,7 +88,7 @@ app.use((err, req, res, next) => {
     }
     return res.status(400).json({ error: err.message });
   } else if (err) {
-    return res.status(500).json({ error: 'Erro no servidor' });
+    return res.status(400).json({ error: err.message });
   }
   next();
 });

@@ -4,27 +4,31 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Visualização de Arquivo</title>
+  <link rel="stylesheet" href="../../css/style.css">
 </head>
 <body>
-  <h1>Visualização de Arquivo</h1>
-  <% if (fileType === 'pdf') { %>
-    <iframe src="/files/<%= filePath %>" width="100%" height="600px"></iframe>
-  <% } else if (['jpg', 'jpeg', 'png', 'gif'].includes(fileType)) { %>
-    <img src="/files/<%= filePath %>" alt="Imagem" width="100%">
-  <% } else if (['mp4', 'webm', 'ogg'].includes(fileType)) { %>
-    <video controls width="100%">
-      <source src="/files/<%= filePath %>" type="video/<%= fileType %>">
-      Seu navegador não suporta a tag de vídeo.
-    </video>
-  <% } else if (['mp3', 'wav', 'ogg'].includes(fileType)) { %>
-    <audio controls>
-      <source src="/files/<%= filePath %>" type="audio/<%= fileType %>">
-      Seu navegador não suporta a tag de áudio.
-    </audio>
-  <% } else { %>
-    <p>Não é possível visualizar este tipo de arquivo.</p>
-    <p>Nome do arquivo: <%= filePath %></p>
-    <a href="/files/<%= filePath %>" download>Baixar arquivo</a>
-  <% } %>
+  <div class="card">
+    <h2 class="card-title">Pré-visualização de Arquivo</h2>
+    <% if (fileType === 'pdf') { %>
+        <iframe src="/files/<%= filePath %>" width="100%" height="600px"></iframe>
+      <% } else if (['jpg', 'jpeg', 'png', 'gif'].includes(fileType)) { %>
+        <img src="/files/<%= filePath %>" alt="Imagem" width="100%">
+      <% } else if (['mp4', 'webm', 'ogg'].includes(fileType)) { %>
+        <video controls width="100%">
+          <source src="/files/<%= filePath %>" type="video/<%= fileType %>">
+          Seu navegador não suporta a tag de vídeo.
+        </video>
+      <% } else if (['mp3', 'wav', 'ogg'].includes(fileType)) { %>
+        <audio controls>
+          <source src="/files/<%= filePath %>" type="audio/<%= fileType %>">
+          Seu navegador não suporta a tag de áudio.
+        </audio>
+      <% } else { %>
+        <p>Não é possível visualizar este tipo de arquivo.</p>
+        <p>Nome do arquivo: <%= filePath %></p>
+        <a href="/files/<%= filePath %>" download>Baixar arquivo</a>
+      <% } %>
+  </div>
+  
 </body>
 </html>
